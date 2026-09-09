@@ -23,16 +23,18 @@ description: "把 YouTube 课程/讲座转成 Obsidian 阅读笔记：meta+封�
 URL
  → 1. meta（oEmbed，无需登录）+ cover（i.ytimg.com 直链，无需登录）
  → 2. transcript（baoyu skill，优先 zh>en；被 bot 拦则走 cookies，见下）
- → 3. 阅读版总结（分节500字+，不要 Framework & Mindset，见下正文规范）
- → 4. 截图（ffmpeg 按时长均分 3 张 + cover）
- → 5. 落盘 Clippings/Courses/ 或 Clippings/Podcasts/（YAML 全字段 + ![[图]] + transcript 折叠）
+ → 3. 阅读版总结（课程类忠实转述，见下正文规范）
+ → 4. 截图（课程类：内容小节数 N，每节 1 张 + cover；图放节上，不堆底部）
+ → 5. 落盘 Clippings/Courses/ 或 Clippings/Podcasts/（YAML 全字段 + 一md一文件夹装图）
 ```
 
-## 正文规范（2026-09-10 起：去 Framework）
+## 正文规范（2026-09-10 起：去 Framework；课程少 AI）
 
-- 正文结构只保留：Overview + 分节总结（一节500字左右）+ Screenshots + Transcript + 转录不确定性备忘。
+- 正文结构只保留：Overview + 分节总结（一节500字左右）+ Transcript + 转录不确定性备忘。**不要 `## Screenshots` 底部画廊，图全部分到各节上边。**
 - 禁止生成 `## Framework & Mindset` 一/二/三。理由：冗余，信息在分节里已覆盖。
-- 旧笔记如带 Framework 段，清理时直接删整节，不留小标题。
+- **课程类少用 AI 发挥：** 忠实转述，保留课程知识（定义原话、数字、论文/模型名、人名、课堂案例）；只整理冗余（字幕滚动重复、口头禅、同义反复），不造新框架、不引申、不下新结论。宁可长一点贴课程，也不要短而滑。
+- 一md一文件夹：笔记 `<basename>.md` 配同名文件夹 `<basename>/`，内放 `cover.jpg` + `sec01.jpg…secNN.jpg`（关键核验过的幻灯片可另存 `slide-<slug>.jpg`）。正文用 `![[<basename>/secNN.jpg]]` 引用，YAML `cover:` 写 `"<basename>/cover.jpg"`。不许把全系列的图堆在系列目录根下。
+- 每节图放节上：`## 一、…` 上方先放 `![[<basename>/sec0N.jpg]]` + 一行 `*↑ 约 M:SS 课程画面*`，再写小节正文。截图时间戳按时长 5%–95% 均分 N 张（N=内容小节数，Overview 配 cover 不占图）。
 
 ## 首验状态（2026-09-09）
 
@@ -60,13 +62,13 @@ $Y='<yt-dlp>'; $C='--cookies-from-browser','firefox:<profile>'; $X='--js-runtime
 ffmpeg -y -loglevel error -ss <sec> -i video.mp4 -frames:v 1 -q:v 3 'assets-<id>-frame<n>.jpg'
 ```
 
-## 落盘规范
+## 落盘规范（一md一文件夹）
 
-- Course → `Clippings/Courses/YYYY-MM-DD-<slug>-<videoId>.md`
-- 系列课程 → `Clippings/Courses/<SERIES>/` 独立文件夹，笔记+图片全搬进去，另附一篇 `00-INDEX-<SERIES>.md` 系列索引
-- Podcast/讲座 → `Clippings/Podcasts/YYYY-MM-DD-<slug>-<videoId>.md`
-- 图与笔记同目录：`assets-<videoId>-cover.jpg`，均分图 `assets-<videoId>-frame1..3.jpg`，正文 `![[...]]` 引用
-- YAML：title/author/channel/url/video_id/fetched/source/language/caption_type/duration/tags/cover
+- Course → `Clippings/Courses/YYYY-MM-DD-<slug>-<videoId>.md` + 同名文件夹 `YYYY-MM-DD-<slug>-<videoId>/` 装该集全部图片
+- 系列课程 → `Clippings/Courses/<SERIES>/` 独立文件夹，笔记（各带自己的图片文件夹）全放进去，另附一篇 `00-INDEX-<SERIES>.md` 系列索引
+- Podcast/讲座 → `Clippings/Podcasts/YYYY-MM-DD-<slug>-<videoId>.md` + 同名图片文件夹（截图可少于课程类，按嘉宾/话题切）
+- 图只进自己的文件夹：`cover.jpg`、`sec01.jpg…`、`slide-<slug>.jpg`，正文 `![[<basename>/secNN.jpg]]` 引用
+- YAML：title/author/channel/url/video_id/fetched/source/language/caption_type/duration/tags/cover（cover 指向 `<basename>/cover.jpg`）
 
 ## v2 升级点
 
